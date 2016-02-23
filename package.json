@@ -1,0 +1,32 @@
+{
+  "name": "dateflow",
+  "version": "0.0.1",
+  "description": "cool dating app",
+  "main": "webpack.config.js",
+  "author": "elpenao",
+  "license": "ISC",
+  "dependencies": {
+    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-plugin-react-html-attrs": "^2.0.0",
+    "babel-plugin-transform-class-properties": "^6.3.13",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-stage-0": "^6.3.13",
+    "firebase": "^2.4.0",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "react-router": "^2.0.0",
+    "reactfire": "^0.6.0",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.5.1",
+    "babel-loader": "^6.2.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "webpack": "^1.12.13"
+  },
+  "scripts": {
+    "dev": "./node_modules/.bin/webpack-dev-server --content-base public --inline --hot",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
