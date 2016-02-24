@@ -1,19 +1,25 @@
 var React = require('react');
 var ReactFireMixin = require('reactfire');
 var Firebase = require('firebase');
+var Router = require('react-router');
+
+function fbAuth (error, authData) {
+    if (error) {
+        console.log("Login Failed!", error);
+    } else {
+	    console.log("Authenticated successfully with payload:", authData);
+	    this.context.router.push("/profile/" + authData.facebook.id)
+    }
+}
 
 var Home = React.createClass({
   mixins: [ReactFireMixin],
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
   handleSubmit: function(){
   	this.ref = new Firebase('https://dateflow.firebaseio.com/');
-  	this.ref.authWithOAuthPopup("facebook", function(error, authData) {
-          if (error) {
-            console.log("Login Failed!", error);
-          } else {
-            console.log("Authenticated successfully with payload:", authData);
-            // go somewhere
-          }
-        }, {
+  	this.ref.authWithOAuthPopup("facebook", fbAuth.bind(this), {
           remember: "sessionOnly",
           scope: "email,user_likes"
         });
