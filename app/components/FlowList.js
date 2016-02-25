@@ -28,7 +28,6 @@ var FlowList = React.createClass({
                   }
                 })
                 .then(function (user) {
-                  // return the other person with key to the flow?
                   var flowObj = {}
                   flowObj.id = flow['.value']
                   flowObj.user = user.val()

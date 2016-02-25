@@ -2,29 +2,79 @@ var React = require('react');
 var ReactFireMixin = require('reactfire');
 var Firebase = require('firebase');
 var Loader = require('react-loader');
+var Router = require('react-router');
+
+function authDataCallback(authData) {
+    if (authData) {
+      var userRef = this.ref.child("profiles").child(authData.uid);
+      userRef.once("value", function(snapshot) {
+        if (!snapshot.exists()) { userRef.set(authData.facebook.cachedUserProfile) };
+      });
+      this.bindAsObject(userRef, "profile");
+      // todo check if flows exist then bind
+      var flows = userRef.child('flows')
+      this.bindAsArray(flows, "flows")
+    } else {
+      console.log("User is logged out");
+    }
+}
 
 var Search = React.createClass({
   mixins: [ReactFireMixin],
+  contextTypes: {
+    router: React.PropTypes.object.isRequired
+  },
   getInitialState: function(){
     return {
-      profiles: []
+      profiles: [],
+      profile: {}
     }
   },
   componentDidMount: function(){
     this.ref = new Firebase('https://dateflow.firebaseio.com/');
-    // Register the callback to be fired every time auth state changes
     this.ref.onAuth(authDataCallback.bind(this));
+    var profileRef = this.ref.child("profiles");
+    this.bindAsArray(profileRef, 'profiles');
+  },
+  startFlow: function (event) {
+    // push to flows
+    var self = this;
+    var mems = {};
+    var dateId = event.target.value
+    mems[this.state.profile['.key']] = true;
+    mems[dateId] = true
+    this.ref.child('flows').push({members:mems})
+    .then(function (newFlow) {
+      newFlow.once('value')
+      .then(function (data) {
+        self.ref.child('profiles/'+ self.state.profile['.key']).child("flows").push(data.key())
+        self.ref.child('profiles/'+ dateId).child("flows").push(data.key())
+        self.context.router.push("/profile/" + self.state.profile['.key'])
+      })
+    })
   },
   render: function(){
-    var profile = this.state.profile
+    var self = this
+    var profiles = this.state.profiles.map(function (profile, index) {
+      if (profile.id === self.state.profile.id) return 
+      return (
+        <div class="col-md-3" key={index}>
+          <h3>{profile.name}</h3>
+          <img src={profile.picture.data.url} />
+          <h6>Gender: {profile.gender}</h6>
+          <button class="btn btn-info" value={profile['.key']} onClick={self.startFlow}>Start Flow</button>
+        </div>
+      )
+    })
     if (this.state.profiles.length > 0) {
-      return(
+      return (
         <div class="row">
-          
-       </div>
+          <h3>Browse Profiles</h3>
+          {profiles}
+        </div>
       )
     }
-    return <Loader loaded={false} options={options} class="spinner" />
+    return <Loader loaded={false} class="spinner" />
 
   }
 })

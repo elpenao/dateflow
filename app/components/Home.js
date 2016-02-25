@@ -5,7 +5,7 @@ var Router = require('react-router');
 
 function fbAuth (error, authData) {
     if (error) {
-        console.log("Login Failed!", error);
+      console.log("Login Failed!", error);
     } else {
 	    console.log("Authenticated successfully with payload:", authData);
 	    this.context.router.push("/profile/" + authData.facebook.id)
@@ -21,7 +21,7 @@ var Home = React.createClass({
   	this.ref = new Firebase('https://dateflow.firebaseio.com/');
   	this.ref.authWithOAuthPopup("facebook", fbAuth.bind(this), {
           remember: "sessionOnly",
-          scope: "email,user_likes"
+          scope: "user_likes"
         });
   },
   render: function(){
